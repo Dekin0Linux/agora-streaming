@@ -15,7 +15,7 @@ export default function LiveStream() {
     const [role, setRole] = useState("host");
     const [hostExists, setHostExists] = useState(false);
     const [height, setHeight] = useState(400);
-    const [joinedUsers, setJoinedUsers] = useState(0);
+    const [viewerCount, setViewerCount] = useState(0);
 
     useEffect(() => {
         const client = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
@@ -44,14 +44,14 @@ export default function LiveStream() {
             setHostExists(true);
         }
 
-        setJoinedUsers(client.remoteUsers.length);
+        setViewerCount(client.remoteUsers.length);
 
         client.on("user-joined", () => {
             setHostExists(true);
         });
 
         client.on("user-joined", () => {
-            setJoinedUsers(prev => prev + 1);
+            setViewerCount(prev => prev + 1);
         });
 
         client.on("user-left", () => {
