@@ -28,6 +28,10 @@ export default function LiveStream() {
         };
     }, []);
 
+    useEffect(()=>{
+        console.log(joinedUsers)
+    },[joinedUsers])
+
     // ================= JOIN =================
     const joinChannel = async () => {
         const client = clientRef.current;
