@@ -15,6 +15,7 @@ export default function LiveStream() {
     const [role, setRole] = useState("host");
     const [hostExists, setHostExists] = useState(false);
     const [height, setHeight] = useState(400);
+    const [joinedUsers, setJoinedUsers] = useState(0);
 
     useEffect(() => {
         const client = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
@@ -42,6 +43,8 @@ export default function LiveStream() {
         client.on("user-joined", () => {
             setHostExists(true);
         });
+
+        setJoinedUsers(client.remoteUsers.length + 1);
 
         // ================= HOST =================
         if (role === "host") {
@@ -183,6 +186,12 @@ export default function LiveStream() {
                     {role === "host" ? "End Stream" : "Leave"}
                 </button>
             )}
+
+            {
+                joined && (
+                    <p style={{ color: "white" }}>{joinedUsers} users joined</p>
+                )
+            }
 
             {/* REMOTE VIDEO (AUDIENCE VIEW) */}
             <div
