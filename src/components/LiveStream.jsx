@@ -28,9 +28,13 @@ export default function LiveStream() {
         };
     }, []);
 
-    // useEffect(() => {
-    //     console.log(joinedUsers)
-    // }, [joinedUsers])
+    const updateViewerCount = () => {
+        const client = clientRef.current;
+        if (!client) return;
+
+        // +1 includes yourself if host
+        setViewerCount(client.remoteUsers.length);
+    };
 
     // ================= JOIN =================
     const joinChannel = async () => {
@@ -43,19 +47,27 @@ export default function LiveStream() {
         if (client.remoteUsers.length > 0) {
             setHostExists(true);
         }
-
-        setViewerCount(client.remoteUsers.length);
-
         client.on("user-joined", () => {
             setHostExists(true);
         });
 
-        client.on("user-joined", () => {
-            setViewerCount(prev => prev + 1);
+        client.on("user-published", () => {
+            updateViewerCount();
         });
 
+        // when someone leaves
         client.on("user-left", () => {
-            setViewerCount(prev => (prev > 0 ? prev - 1 : 0));
+            updateViewerCount();
+        });
+
+        // when someone joins channel
+        client.on("user-joined", () => {
+            updateViewerCount();
+        });
+
+        // when someone unpublishes
+        client.on("user-unpublished", () => {
+            updateViewerCount();
         });
 
 
