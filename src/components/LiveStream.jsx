@@ -28,9 +28,9 @@ export default function LiveStream() {
         };
     }, []);
 
-    useEffect(()=>{
-        console.log(joinedUsers)
-    },[joinedUsers])
+    // useEffect(() => {
+    //     console.log(joinedUsers)
+    // }, [joinedUsers])
 
     // ================= JOIN =================
     const joinChannel = async () => {
@@ -44,11 +44,21 @@ export default function LiveStream() {
             setHostExists(true);
         }
 
+        setJoinedUsers(client.remoteUsers.length);
+
         client.on("user-joined", () => {
             setHostExists(true);
         });
 
-        setJoinedUsers(client.remoteUsers.length + 1);
+        client.on("user-joined", () => {
+            setJoinedUsers(prev => prev + 1);
+        });
+
+        client.on("user-left", () => {
+            setViewerCount(prev => (prev > 0 ? prev - 1 : 0));
+        });
+
+
 
         // ================= HOST =================
         if (role === "host") {
@@ -191,11 +201,23 @@ export default function LiveStream() {
                 </button>
             )}
 
-            {
-                joined && (
-                    <p style={{ color: "white" }}>{joinedUsers} users joined</p>
-                )
-            }
+            {joined && (
+                <div
+                    style={{
+                        position: "absolute",
+                        top: 20,
+                        left: 20,
+                        background: "rgba(0,0,0,0.6)",
+                        padding: "8px 15px",
+                        borderRadius: 20,
+                        color: "white",
+                        fontWeight: "bold",
+                        zIndex: 1000
+                    }}
+                >
+                    🔴 LIVE • {viewerCount} watching
+                </div>
+            )}
 
             {/* REMOTE VIDEO (AUDIENCE VIEW) */}
             <div
